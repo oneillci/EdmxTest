@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Xml;
+using System.Xml.Linq;
 using EdmxTest.DataModel;
 
 namespace Edmx.DataModel.Resources
@@ -25,10 +26,13 @@ namespace Edmx.DataModel.Resources
         {
             stream.Seek(0, SeekOrigin.Begin);
 
-            
-            var reader = XmlReader.Create(stream);
+            var document = XDocument.Load(stream);
+           
 
-            var item = from node in reader.De
+            var item = (from node in document.Descendants().Where(x => x.Name.LocalName == "Runtime")
+                                            .Descendants().Where(x => x.Name.LocalName == nodeToFind)
+                                            .Descendants().Where(x => x.Name.LocalName == subNode)
+                        select node).FirstOrDefault();
         }
     }
 }
