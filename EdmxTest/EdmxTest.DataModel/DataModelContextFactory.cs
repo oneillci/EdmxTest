@@ -6,24 +6,21 @@ namespace EdmxTest.DataModel
 {
     public class DataModelContextFactory
     {
-
-        public DataModelContext CreateContext()
+        public static DataModelContext CreateContext()
         {
+            var connString = @"Data Source=CIARANW8\SQLEXPRESS;Initial catalog=EdmxTest; Integrated Security=True; MultipleActiveResultSets=True";
+
             var entityBuilder = new EntityConnectionStringBuilder()
             {
                 Provider = "System.Data.SqlClient",
-                ProviderConnectionString = "data source=.;Initial catalog=EdmxTest; Integrated Security=true;",
+                ProviderConnectionString = connString,
                 Metadata = @"res://*/AdventureWorksModel.csdl|
                              res://*/AdventureWorksModel.ssdl|
                              res://*/AdventureWorksModel.msl"
             };
 
-
-            // Set the provider-specific connection string.
-
-            // Set the Metadata location.
-            Console.WriteLine(entityBuilder.ToString());
-            var context = new DataModelContext();
+            var connectionString = entityBuilder.ToString();
+            var context = new DataModelContext(connString);
             return context;
         }
     }

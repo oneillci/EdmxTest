@@ -10,18 +10,18 @@ namespace EdmxTest.DataModel
 
         public DataModelContext()
         {
-
+            Database.SetInitializer<DataModelContext>(new DataModelContextInitializer());
         }
 
         public DataModelContext(string connectionString) : base(connectionString)
         {
-
+            Database.SetInitializer<DataModelContext>(new DataModelContextInitializer());
         }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            Database.SetInitializer<DataModelContext>(new DataModelContextInitializer());
+            
         }
     }
 }
