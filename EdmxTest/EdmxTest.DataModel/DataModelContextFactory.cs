@@ -6,7 +6,7 @@ namespace EdmxTest.DataModel
 {
     public class DataModelContextFactory
     {
-        public static DataModelContext CreateContext()
+        public static DataModelContext CreateContext(ConnectionStringType connectionStringType)
         {
             var connString = @"Data Source=CIARANW8\SQLEXPRESS;Initial catalog=EdmxTest; Integrated Security=True; MultipleActiveResultSets=True";
 
@@ -14,14 +14,23 @@ namespace EdmxTest.DataModel
             {
                 Provider = "System.Data.SqlClient",
                 ProviderConnectionString = connString,
-                Metadata = @"res://*/AdventureWorksModel.csdl|
-                             res://*/AdventureWorksModel.ssdl|
-                             res://*/AdventureWorksModel.msl"
+                Metadata = @"res://*/EdmxTest.csdl|
+                             res://*/EdmxTest.ssdl|
+                             res://*/EdmxTest.msl"
             };
 
-            var connectionString = entityBuilder.ToString();
+            if (connectionStringType == ConnectionStringType.Edmx)
+            {
+                connString = entityBuilder.ToString();                
+            }
             var context = new DataModelContext(connString);
             return context;
         }
+    }
+
+    public enum ConnectionStringType
+    {
+        Normal,
+        Edmx
     }
 }

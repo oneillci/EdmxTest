@@ -11,7 +11,7 @@ namespace UnitTestProject1
         [TestMethod]
         public void TestMethod1()
         {
-            var context = DataModelContextFactory.CreateContext();
+            var context = DataModelContextFactory.CreateContext(ConnectionStringType.Normal);
 
             var first = context.Teams.First();
 

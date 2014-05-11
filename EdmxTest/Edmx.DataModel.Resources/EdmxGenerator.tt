@@ -1,0 +1,23 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ assembly name="System.Xml" #>
+<#@ assembly name="System.Xml.Linq" #>
+<#@ assembly name="$(ProjectDir)$(OutDir)\EdmxTest.DataModel.dll" #>
+<#@ assembly name="$(ProjectDir)$(OutDir)\EntityFramework.dll" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="EdmxTest.DataModel" #>
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Xml" #>
+<#@ import namespace="System.Xml.Linq" #>
+<#@ output extension=".txt" #>
+
+<#
+	var context = DataModelContextFactory.CreateContext(ConnectionStringType.Normal);
+
+	using (var stream = new MemoryStream())
+	using (var writer = new XmlTextWriter(stream))
+	{
+	}
+#>
