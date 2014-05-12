@@ -8,20 +8,21 @@ namespace EdmxTest.DataModel
     {
         public DbSet<Team> Teams { get; set; }
 
-        public DataModelContext()
+        public DataModelContext(ConnectionStringType connectionStringType)
         {
-            Database.SetInitializer<DataModelContext>(new DataModelContextInitializer());
+            if (connectionStringType == ConnectionStringType.Normal)
+                Database.SetInitializer<DataModelContext>(new DataModelContextInitializer());
         }
 
-        public DataModelContext(string connectionString) : base(connectionString)
+        public DataModelContext(ConnectionStringType connectionStringType, string connectionString) : base(connectionString)
         {
-            Database.SetInitializer<DataModelContext>(new DataModelContextInitializer());
+            if (connectionStringType == ConnectionStringType.Normal)
+                Database.SetInitializer<DataModelContext>(new DataModelContextInitializer());
         }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder);
-            
+            base.OnModelCreating(modelBuilder);            
         }
     }
 }

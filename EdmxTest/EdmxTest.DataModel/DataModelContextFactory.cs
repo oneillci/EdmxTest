@@ -14,16 +14,14 @@ namespace EdmxTest.DataModel
             {
                 Provider = "System.Data.SqlClient",
                 ProviderConnectionString = connString,
-                Metadata = @"res://*/EdmxTest.csdl|
-                             res://*/EdmxTest.ssdl|
-                             res://*/EdmxTest.msl"
+                Metadata = @"res://*/Edmx.DataModel.Resources.EdmxTest.csdl|res://*/Edmx.DataModel.Resources.EdmxTest.ssdl|res://*/Edmx.DataModel.Resources.EdmxTest.msl"
             };
 
             if (connectionStringType == ConnectionStringType.Edmx)
             {
                 connString = entityBuilder.ToString();                
             }
-            var context = new DataModelContext(connString);
+            var context = new DataModelContext(connectionStringType, connString);
             return context;
         }
     }
