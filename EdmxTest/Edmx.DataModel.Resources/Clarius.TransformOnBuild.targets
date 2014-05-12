@@ -42,7 +42,7 @@
         </ItemGroup>
 
         <!-- Perform task batching for each file -->
-        <Exec Command="&quot;$(_TransformExe)&quot; &quot;@(_TextTransform)&quot;"
+        <Exec Command="&quot;$(_TransformExe)&quot; &quot;@(_TextTransform)&quot; -a !!projectDir!$(ProjectDir) -a !!outDir!$(OutDir)""
               Condition="'%(Identity)' != ''"/>
         
     </Target>
