@@ -1,1 +1,6 @@
 ﻿
+
+This file is essentially dummy output from EdmResources.tt. ProjectDir: C:\Users\Ciaran\Documents\GitHub\EdmxTest\EdmxTest\Edmx.DataModel.Resources\ OutDir: bin\Debug\
+EdmResources.tt instantiates a DbContext, creates an EDMX in memory and writes the component parts to .csdl, .msl & .ssdl files.
+These files are included as embedded resources and consumed in DataModelContextFactory.CreateContext()
+
