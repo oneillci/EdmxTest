@@ -8,16 +8,15 @@ namespace EdmxTest.DataModel
     {
         public DbSet<Team> Teams { get; set; }
 
-        public DataModelContext(ConnectionStringType connectionStringType)
-        {
-            if (connectionStringType == ConnectionStringType.Normal)
-                Database.SetInitializer<DataModelContext>(new DataModelContextInitializer());
-        }
+        //public DataModelContext() 
+        //{
+        //    Database.SetInitializer<DataModelContext>(new DataModelContextInitializer());
+        //}
 
-        public DataModelContext(ConnectionStringType connectionStringType, string connectionString) : base(connectionString)
+        public DataModelContext(string connectionString) : base(connectionString)
         {
-            if (connectionStringType == ConnectionStringType.Normal)
-                Database.SetInitializer<DataModelContext>(new DataModelContextInitializer());
+            //if (!connectionString.Contains("res://"))
+            //Database.SetInitializer<DataModelContext>(new DataModelContextInitializer());
         }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)

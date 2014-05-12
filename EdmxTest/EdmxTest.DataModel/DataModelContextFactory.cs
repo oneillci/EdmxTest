@@ -21,7 +21,7 @@ namespace EdmxTest.DataModel
             {
                 connString = entityBuilder.ToString();                
             }
-            var context = new DataModelContext(connectionStringType, connString);
+            var context = new DataModelContext(connString);
             return context;
         }
     }

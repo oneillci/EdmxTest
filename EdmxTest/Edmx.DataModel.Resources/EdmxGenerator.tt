@@ -37,7 +37,7 @@
 	
 	var efAssembly = Assembly.LoadFrom(projectDir + outDir + "EntityFramework.dll");
 	Assembly.LoadFrom(projectDir + outDir + "EntityFramework.SqlServer.dll");
-	var frameworkAssembly = Assembly.LoadFrom(projectDir + outDir + "EdmxTest.DataModel.dll");
+	var frameworkAssembly = Assembly.LoadFrom(projectDir + @"..\EdmxTest.DataModel\" + outDir + "EdmxTest.DataModel.dll");
 	
 	var contextType = frameworkAssembly.GetType("EdmxTest.DataModel.DataModelContext");
 	var edmxWriter = efAssembly.GetType("System.Data.Entity.Infrastructure.EdmxWriter");
@@ -47,7 +47,7 @@
 
 	try
     {
-		ctx = Activator.CreateInstance(contextType, connectionString);
+		ctx = Activator.CreateInstance(contextType, new[] {connectionString});
 	
         using (var stream = new MemoryStream())
         using (var writer = XmlWriter.Create(stream))
