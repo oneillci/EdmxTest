@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Edmx.DataModel.Resources;
 using EdmxTest.DataModel;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -16,6 +17,14 @@ namespace UnitTestProject1
             var first = context.Teams.First();
 
             Assert.AreEqual(1, first.Id);
+        }
+
+        [TestMethod]
+        public void Test_EdmxHelper()
+        {
+            var helper = new EdmxHelper();
+
+            helper.WriteEdmxComponents();
         }
     }
 }

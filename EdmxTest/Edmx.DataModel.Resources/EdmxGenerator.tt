@@ -1,23 +1,94 @@
-﻿<#@ template debug="false" hostspecific="false" language="C#" #>
-<#@ assembly name="System.Core" #>
-<#@ assembly name="System.Xml" #>
-<#@ assembly name="System.Xml.Linq" #>
-<#@ assembly name="$(ProjectDir)$(OutDir)\EdmxTest.DataModel.dll" #>
-<#@ assembly name="$(ProjectDir)$(OutDir)\EntityFramework.dll" #>
-<#@ import namespace="System.Linq" #>
-<#@ import namespace="System.Text" #>
-<#@ import namespace="System.Collections.Generic" #>
-<#@ import namespace="EdmxTest.DataModel" #>
+﻿<#@ template debug="true" hostSpecific="true" #>
+<#@ output extension=".txt" #>
+<#@ Assembly Name="System.Core" #>
+<#@ Assembly Name="System.Windows.Forms" #>
+<#@ Assembly Name="System.Xml" #>
+<#@ Assembly Name="System.Xml.Linq" #>
+<#@ import namespace="System" #>
 <#@ import namespace="System.IO" #>
+<#@ import namespace="System.Diagnostics" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Reflection" #>
 <#@ import namespace="System.Xml" #>
 <#@ import namespace="System.Xml.Linq" #>
-<#@ output extension=".txt" #>
 
-<#
-	var context = DataModelContextFactory.CreateContext(ConnectionStringType.Normal);
+<#    
+	string projectDir = "";
+	string outDir = "";
 
-	using (var stream = new MemoryStream())
-	using (var writer = new XmlTextWriter(stream))
+	// Try to get parameters passed via command line
+	try
+    {
+	    projectDir = this.Host.ResolveParameterValue("","","projectDir");
+	    outDir = this.Host.ResolveParameterValue("","","outDir");
+    }
+	catch(Exception) { }
+	
+	if (string.IsNullOrWhiteSpace(projectDir))
+    {
+	    // Try to use VS macro's first so Save/Run custom tool runs
+	    try
+        {
+	        projectDir = this.Host.ResolveAssemblyReference("$(ProjectDir)");
+	        outDir = this.Host.ResolveAssemblyReference("$(OutDir)");
+        }
+	    catch(Exception) { }
+    } 	
+	
+	var efAssembly = Assembly.LoadFrom(projectDir + outDir + "EntityFramework.dll");
+	Assembly.LoadFrom(projectDir + outDir + "EntityFramework.SqlServer.dll");
+	var frameworkAssembly = Assembly.LoadFrom(projectDir + outDir + "EdmxTest.DataModel.dll");
+	
+	var contextType = frameworkAssembly.GetType("EdmxTest.DataModel.DataModelContext");
+	var edmxWriter = efAssembly.GetType("System.Data.Entity.Infrastructure.EdmxWriter");
+
+    var connectionString = @"Data Source=CIARANW8\SQLEXPRESS;Initial catalog=EdmxTest; Integrated Security=True; MultipleActiveResultSets=True";
+	object ctx = null;
+
+	try
+    {
+		ctx = Activator.CreateInstance(contextType, connectionString);
+	
+        using (var stream = new MemoryStream())
+        using (var writer = XmlWriter.Create(stream))
+        {
+			edmxWriter.GetMethods().Where(m => m.Name == "WriteEdmx").First().Invoke(null, new object[] {ctx, writer});
+            WriteEdmSection(stream, "ConceptualModels", "Schema", Host.ResolvePath("EdmxTest.csdl"));
+            WriteEdmSection(stream, "Mappings", "Mapping", Host.ResolvePath("EdmxTest.msl"));
+            WriteEdmSection(stream, "StorageModels", "Schema", Host.ResolvePath("EdmxTest.ssdl"));
+        }
+    }
+	finally
 	{
-	}
+		if (ctx != null && ctx is IDisposable)
+		{
+			((IDisposable)ctx).Dispose();		
+        }
+		ctx = null;
+    }
+#>
+
+This file is essentially dummy output from EdmResources.tt. ProjectDir: <#= projectDir #> OutDir: <#= outDir #>
+EdmResources.tt instantiates a DbContext, creates an EDMX in memory and writes the component parts to .csdl, .msl & .ssdl files.
+These files are included as embedded resources and consumed in DataModelContextFactory.CreateContext()
+
+<#+
+private void WriteEdmSection(Stream stream, string nodeToFind, string subNodeToFind, string fileName)
+{
+    stream.Seek(0, SeekOrigin.Begin);
+    var edmx = XDocument.Load(stream);
+
+    var content = edmx.Descendants().Where(d => d.Name.LocalName.Equals("Runtime", StringComparison.InvariantCultureIgnoreCase))
+                        .Descendants().Where(d => d.Name.LocalName.Equals(nodeToFind, StringComparison.InvariantCultureIgnoreCase))
+                        .Descendants()
+                        .FirstOrDefault(d => d.Name.LocalName.Equals(subNodeToFind, StringComparison.InvariantCultureIgnoreCase));
+
+    if (content != null)
+    {
+        using (var xwriter = XmlWriter.Create(fileName, new XmlWriterSettings() { Indent = true }))
+        {
+            content.WriteTo(xwriter);
+        }
+    }
+}
 #>
